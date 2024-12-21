@@ -16,6 +16,10 @@ int SynchroCalculator::Init()
     if (LoadAssets() != 0)
         return -1;
 
+	sf::Image icon;
+	icon.loadFromMemory(Icon_data, Icon_size);
+	window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
+
     fixedResistanceText = Text(10, 50, font, 24, "Fixed resistance: ", sf::Color::White);
     fixedResistanceInput = Text(200, 50, font, 24, std::to_string(baseResistance), sf::Color::White);
 

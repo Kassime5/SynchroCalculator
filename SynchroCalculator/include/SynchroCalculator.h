@@ -9,9 +9,10 @@
 #include <windows.h>
 #include "Button.h"
 #include "Text.h"
-#include "background.h"
-#include "AssetsToBinary.h"
-#include "Roboto.h"
+#include "Assets/background.h"
+#include "Assets/AssetsToBinary.h"
+#include "Assets/Roboto.h"
+#include "Assets/icon.h"
 
 namespace fs = std::filesystem;
 

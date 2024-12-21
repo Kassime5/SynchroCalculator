@@ -87,7 +87,8 @@
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /S /E /I /Y "$(SolutionDir)Assets" "$(OutDir)Assets"</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -111,7 +112,8 @@
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /S /E /I /Y "$(SolutionDir)Assets" "$(OutDir)Assets"</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -131,7 +133,8 @@
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /S /E /I /Y "$(SolutionDir)Assets" "$(OutDir)Assets"</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -155,35 +158,39 @@
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /S /E /I /Y "$(SolutionDir)Assets" "$(OutDir)Assets"</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="include\Button.h" />
-    <ClCompile Include="src\AssetsToBinary.cpp" />
-    <ClCompile Include="src\background.cpp" />
+    <ClCompile Include="src\Assets\AssetsToBinary.cpp" />
+    <ClCompile Include="src\Assets\background.cpp" />
+    <ClCompile Include="src\Assets\icon.cpp" />
+    <ClCompile Include="src\Assets\Roboto.cpp" />
     <ClCompile Include="src\Button.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\Roboto.cpp" />
     <ClCompile Include="src\SynchroCalculator.cpp" />
     <ClCompile Include="src\Text.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\AssetsToBinary.h" />
-    <ClInclude Include="include\background.h" />
-    <ClInclude Include="include\Roboto.h" />
+    <ClInclude Include="include\Assets\AssetsToBinary.h" />
+    <ClInclude Include="include\Assets\background.h" />
+    <ClInclude Include="include\Assets\icon.h" />
+    <ClInclude Include="include\Assets\Roboto.h" />
     <ClInclude Include="include\SynchroCalculator.h" />
     <ClInclude Include="include\Text.h" />
     <ClInclude Include="resource.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="include\icon.ico" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SynchroCalculator.rc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="SynchroCalculator.aps" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\Assets\icon.ico" />
+    <Image Include="icon1.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

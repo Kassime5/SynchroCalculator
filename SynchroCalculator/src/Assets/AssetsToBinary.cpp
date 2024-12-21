@@ -1,4 +1,4 @@
-#include "AssetsToBinary.h"
+#include "Assets/AssetsToBinary.h"
 
 // Binary data for D:\Programming\SynchroCalculator\x64\Debug\Assets\Spells\astrolabe.png
 unsigned char astrolabe_data[] = {
