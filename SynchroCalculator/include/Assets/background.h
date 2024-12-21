@@ -1,7 +1,7 @@
 #ifndef BACKGROUND_PNG_H
 #define BACKGROUND_PNG_H
 
-extern unsigned char background_png[];
-extern unsigned int background_png_len;
+extern unsigned char background_data[];
+extern unsigned int background_size;
 
-#endif
+#endif // BACKGROUND_PNG_H

@@ -208,7 +208,7 @@ int SynchroCalculator::LoadAssets()
 		}
 	}
 
-	if (!backgroundTexture.loadFromMemory(background_png, background_png_len)) {
+	if (!backgroundTexture.loadFromMemory(background_data, background_size)) {
 		std::cerr << "Failed to load texture from memory!" << std::endl;
 	}
 	background.setTexture(backgroundTexture);
