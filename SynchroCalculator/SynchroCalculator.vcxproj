@@ -174,6 +174,16 @@
     <ClInclude Include="include\Roboto.h" />
     <ClInclude Include="include\SynchroCalculator.h" />
     <ClInclude Include="include\Text.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="include\icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="SynchroCalculator.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SynchroCalculator.aps" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
