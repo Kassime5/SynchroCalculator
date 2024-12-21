@@ -10,7 +10,7 @@ int SynchroCalculator::Init()
     SetWindowLong(hwnd, GWL_EXSTYLE, style | WS_EX_LAYERED);
     SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 255, LWA_ALPHA);
 
-    window.setFramerateLimit(15);
+    window.setFramerateLimit(60);
     squareSize = sizeX / maxColumns;
 
     if (LoadAssets() != 0)
@@ -34,8 +34,6 @@ int SynchroCalculator::Init()
     return Run(&window);
 }
 
-
-
 int SynchroCalculator::Run(sf::RenderWindow* window)
 {
     while (window->isOpen())
@@ -43,90 +41,116 @@ int SynchroCalculator::Run(sf::RenderWindow* window)
         sf::Event event;
         while (window->pollEvent(event))
         {
-			EventHandler(event, window);
+            EventHandler(event, window);
         }
 
-        // Clear the window
-		window->clear(sf::Color(0, 0, 0, 0));
-		window->draw(background);
-		stayOnTopButton.draw(*window);
+        if (!needsUpdate)
+        {
+            sf::sleep(sf::milliseconds(10));
+            continue;
+        }
 
-        // Draw all sprites
+        // Draw background and elements only when needed
+		window->clear();
+        window->draw(background);
+        stayOnTopButton.draw(*window);
+
         for (const auto& sprite : sprites)
         {
             window->draw(sprite);
         }
 
-		text.draw(*window);
-		fixedResistanceText.draw(*window);
-		fixedResistanceInput.draw(*window);
-		percentResistanceText.draw(*window);
-		percentResistanceInput.draw(*window);
+        text.draw(*window);
+        fixedResistanceText.draw(*window);
+        fixedResistanceInput.draw(*window);
+        percentResistanceText.draw(*window);
+        percentResistanceInput.draw(*window);
 
-
-        // Display the frame
         window->display();
+        needsUpdate = false;
     }
 
     return 0;
 }
 
+
 void SynchroCalculator::EventHandler(sf::Event event, sf::Window* window)
 {
-	if (event.type == sf::Event::Closed)
-		window->close();
-	if (event.type == sf::Event::MouseEntered)
-	{
-		HWND hwnd = window->getSystemHandle();
-		SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 255, LWA_ALPHA);
-	}
-	else if (event.type == sf::Event::MouseLeft)
-	{
-		HWND hwnd = window->getSystemHandle();
-		SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 128, LWA_ALPHA);
-	}
+    if (event.type == sf::Event::Closed)
+    {
+        window->close();
+        return;
+    }
 
+    if (event.type == sf::Event::MouseEntered)
+    {
+        HWND hwnd = window->getSystemHandle();
+        SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 255, LWA_ALPHA);
+        return;
+    }
 
-	if (event.type == sf::Event::MouseButtonPressed)
-	{
-		sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
-		//std::cout << "Mouse position: " << mousePos.x << " " << mousePos.y << std::endl;
+    if (event.type == sf::Event::MouseLeft)
+    {
+        HWND hwnd = window->getSystemHandle();
+        SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 128, LWA_ALPHA);
+        return;
+    }
+
+    if (event.type == sf::Event::MouseButtonPressed)
+    {
+        sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
+
         for (size_t i = 0; i < sprites.size(); ++i)
         {
             if (sprites[i].getGlobalBounds().contains(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y)))
             {
-                // Toggle the selected state
                 selectedStates[i] = !selectedStates[i];
 
                 if (selectedStates[i])
                 {
-                    // Change color if selected
                     sprites[i].setColor(sf::Color(255, 0, 0)); // Red tint
                     damageMultiplier += 2;
-					text.setText("Current damage: " + std::to_string(CalculateDamage()));
                 }
                 else
                 {
-                    // Reset color if deselected
                     sprites[i].setColor(sf::Color(255, 255, 255)); // Original
                     damageMultiplier -= 2;
-					text.setText("Current damage: " + std::to_string(CalculateDamage()));
                 }
+
+                text.setText("Current damage: " + std::to_string(CalculateDamage()));
+                needsUpdate = true;
             }
         }
-		if (fixedResistanceInput.getGlobalBounds().contains(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y)))
-		{
-			SelectText(&fixedResistanceText, &fixedResistanceInput);
-		}
-		else if (percentResistanceInput.getGlobalBounds().contains(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y)))
-		{
-			SelectText(&percentResistanceText, &percentResistanceInput);
+
+        if (fixedResistanceInput.getGlobalBounds().contains(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y)))
+        {
+            SelectText(&fixedResistanceText, &fixedResistanceInput);
+            needsUpdate = true;
+            return;
         }
-		stayOnTopButton.isClicked(mousePos);
-	}
-	if (event.type == sf::Event::TextEntered)
-		EnterText(event, window);
+
+        if (percentResistanceInput.getGlobalBounds().contains(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y)))
+        {
+            SelectText(&percentResistanceText, &percentResistanceInput);
+            needsUpdate = true;
+            return;
+        }
+
+        if (stayOnTopButton.isClicked(mousePos))
+        {
+            needsUpdate = true;
+            return;
+        }
+    }
+
+    if (event.type == sf::Event::TextEntered)
+    {
+        EnterText(event, window);
+        needsUpdate = true;
+        return;
+    }
 }
+
 
 void SynchroCalculator::SelectText(Text* tooltipText, Text* inputText)
 {
@@ -135,6 +159,7 @@ void SynchroCalculator::SelectText(Text* tooltipText, Text* inputText)
 	inputText->setText("");
 	tooltipText->setFillColor(sf::Color::Red);
 	tooltipText->setStyle(sf::Text::Underlined);
+	needsUpdate = true;
 }
 
 void SynchroCalculator::UnselectText()
@@ -146,6 +171,7 @@ void SynchroCalculator::UnselectText()
 		percentResistanceText.setFillColor(sf::Color::White);
 		percentResistanceText.setStyle(sf::Text::Regular);
 		selectedText = nullptr;
+		needsUpdate = true;
 	}
 }
 
@@ -168,6 +194,7 @@ void SynchroCalculator::ToggleStayOnTop(sf::RenderWindow& window)
 		stayOnTopButton.setColor(sf::Color::Blue);
 		stayOnTopButton.setText("Pin");
 	}
+	needsUpdate = true;
 }
 
 int SynchroCalculator::LoadAssets()
@@ -221,19 +248,25 @@ int SynchroCalculator::LoadAssets()
 		return -1;
 	}
 	font = sf::Font(font);
-
+	needsUpdate = true;
 	return 0;
 }
 
 int SynchroCalculator::CalculateDamage()
 {
-	int result = (int)BaseDamage() * (100 - resistancePercentage) / 100;
-    result = result * damageMultiplier;
-	if (result < 0 || damageMultiplier < 0)
-	{
-		return 0;
-	}
-    return (int)result;
+	int effectiveBaseDamage = std::max(0, BaseDamage() - baseResistance);
+
+    int adjustedDamage = effectiveBaseDamage * (100 - resistancePercentage) / 100;
+
+    int result = adjustedDamage * damageMultiplier;
+
+    if (result < 0 || damageMultiplier < 0)
+    {
+        result = 0;
+    }
+
+    needsUpdate = true;
+    return result;
 }
 
 int SynchroCalculator::BaseDamage()
@@ -280,10 +313,16 @@ void SynchroCalculator::EnterText(sf::Event event, sf::Window* window)
 		}
 
 		// Converts the input into number to add to their corresponding variables
-		baseResistance = std::stoi(fixedResistanceInput.getText());
-		resistancePercentage = std::stoi(percentResistanceInput.getText());
+		baseResistance = fixedResistanceInput.getText().length() > 5 ? 0 : std::stoi(fixedResistanceInput.getText()); // Basic check to prevent overflow
+		resistancePercentage = percentResistanceInput.getText().length() > 5 ? 0 : std::stoi(percentResistanceInput.getText());
+		
+		// Redraw the text
+		fixedResistanceInput.setText(std::to_string(baseResistance));
+		percentResistanceInput.setText(std::to_string(resistancePercentage));
+		
 		// Recalculate the damage
 		text.setText("Current damage: " + std::to_string(CalculateDamage()));
 		UnselectText();
 	}
+	needsUpdate = true;
 }

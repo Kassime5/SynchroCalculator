@@ -5,6 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <filesystem>
+#include <algorithm>
 #include <vector>
 #include <windows.h>
 #include "Button.h"
@@ -68,4 +69,6 @@ private:
 
 	Button stayOnTopButton;
 	bool stayOnTop = false;
+
+	bool needsUpdate = false;
 };
